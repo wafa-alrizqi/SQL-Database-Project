@@ -1,0 +1,87 @@
+		** SQL Database Project **
+
+
+	** DDL commands **
+
+create database store;
+
+create table countries(
+code int primary key,
+name varchar(20) unique,
+continent_name varchar(20) not null
+);
+
+create table users(
+id int primary key,
+full_name varchar(20),
+email varchar(20) unique,
+gender char(1) check(gender='f' or gender='m'),
+date_of_birth varchar(15),
+created_at datetime default current_timestamp,
+country_code int,
+foreign key (country_code) references countries(code)
+);
+
+create table orders(
+id int primary key,
+user_id int,
+status varchar(6) check(status='start' or status='finish'),
+created_at datetime default current_timestamp,
+foreign key (user_id) references users(id)
+);
+
+create table products(
+id int primary key,
+name varchar(10) not null,
+price int default 0,
+status varchar(10) check(status='valid' or status='expired'),
+created_at datetime default current_timestamp
+);
+
+create table order_products(
+order_id int primary key,
+product_id int,
+quantity int default 0,
+foreign key (order_id) references orders(id),
+foreign key (product_id) references products(id)
+);
+
+
+	** DML commands ** 
+
+#1. Add new row to the countries table.
+
+	insert into countries(code,name,continent_name) values (966,'KSA','Asia');
+
+#2. Add new row to the users table.
+
+	insert into users(id, full_name, email, gender, date_of_birth, country_code) values (1,'Wafa Ali','wafa.alrizqi@gmail.com','f','14-08-1999',966);
+	
+#3. Add new row to the orders table.
+
+	 insert into orders(id, user_id, status) values (1,1,'start');
+
+#4. Add new row to the products table.
+	
+	 insert into products(id, name, price, status) values (1,'candle',55,'valid');
+
+#5. Add new row to the order_products table.
+	
+	 insert into order_products(order_id, product_id, quantity) values (1,1,2);
+
+#6. Update row from countries table.
+
+	 update countries set name='Saudi Arabia' where code=966;
+
+#7. Delete row from products table.
+
+	** Cannot delete a parent row: a foreign key constraint fails. **
+
+	If we wanted to delete a parent row, we need to delete dependent rows fisrt. 
+	in our project we have a dependent row in (order_products) table: 
+	1#	
+		delete from order_products WHERE order_id=1;
+
+	2# now we can delete the parent row:
+
+		delete from products WHERE id=1;
